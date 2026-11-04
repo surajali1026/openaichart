@@ -21,8 +21,9 @@ jobs:
 
       - name: Extract Android project
         run: |
-          unzip -q OpenAIChart-Android-Project.zip
-          ls -la openaichart-work
+          unzip -q OpenAIChart-Android-Project.zip -d project
+          test -f project/settings.gradle.kts
+          ls -la project
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -30,8 +31,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -39,13 +46,16 @@ jobs:
           gradle-version: '9.3.1'
 
       - name: Build Debug APK
-        working-directory: openaichart-work
+        working-directory: project
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
         run: gradle --no-daemon :app:assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: OpenAIChart-APK
-          path: openaichart-work/app/build/outputs/apk/debug/*.apk
+          path: project/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           
