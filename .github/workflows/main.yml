@@ -22,8 +22,8 @@ jobs:
       - name: Extract Android project
         run: |
           unzip -q OpenAIChart-Android-Project.zip -d project
-          test -f project/settings.gradle.kts
-          ls -la project
+          test -f project/openaichart-work/settings.gradle.kts
+          ls -la project/openaichart-work
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -46,7 +46,7 @@ jobs:
           gradle-version: '9.3.1'
 
       - name: Build Debug APK
-        working-directory: project
+        working-directory: project/openaichart-work
         env:
           ANDROID_HOME: /usr/local/lib/android/sdk
           ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
@@ -56,6 +56,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: OpenAIChart-APK
-          path: project/app/build/outputs/apk/debug/*.apk
+          path: project/openaichart-work/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           
