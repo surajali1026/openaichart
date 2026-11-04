@@ -6,7 +6,7 @@ on:
   push:
     paths:
       - 'OpenAIChart-Android-Project.zip'
-      - '.github/workflows/android-build.yml'
+      - '.github/workflows/main.yml'
 
 permissions:
   contents: read
